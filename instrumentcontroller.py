@@ -294,6 +294,8 @@ class InstrumentController(QObject):
         sa.send(f':SENS:FREQ:SPAN {sa_span}MHz')
         sa.send(f'DISP:WIND:TRAC:Y:RLEV {sa_rlev}')
         sa.send(f'DISP:WIND:TRAC:Y:PDIV {sa_scale_y}')
+        sa.send(f'AVER:COUNT {sa_avg_count}')
+        sa.send(f'AVER {sa_avg_state}')
         sa.send(':CALC:MARK1:MODE POS')
 
         src.send('OUTPut ON')
