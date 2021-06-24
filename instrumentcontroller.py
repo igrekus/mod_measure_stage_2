@@ -396,7 +396,7 @@ class InstrumentController(QObject):
                     # TODO record new test data
                     raw_point = mocked_raw_data[index]
                     raw_point['loss'] = pow_loss
-                    raw_point['mod_u_db'] = -15
+                    raw_point['mod_u_db'] = mod_u
                     raw_point['sa_p_3_harm'] = raw_point['sa_p_mod_f_x3']
                     index += 1
 
