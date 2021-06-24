@@ -311,6 +311,10 @@ class InstrumentController(QObject):
         res = []
         for freq_lo in freq_lo_values:
 
+            freq_sa = freq_lo
+            if lo_f_is_div2:
+                freq_lo *= 2
+
             gen_lo.send(f'SOUR:FREQ {freq_lo}GHz')
 
             for mod_u in mod_u_values:
@@ -329,35 +333,37 @@ class InstrumentController(QObject):
                     sa.send(':CAL:AUTO ON')
                     raise RuntimeError('measurement cancelled')
 
-                # if lo_f_is_div2:
-                #     freq_lo *= 2
-                #
-
                 gen_lo.send(f':RAD:ARB:RSC {mod_u}')
 
                 time.sleep(0.5)
 
-                sa.send(f':SENSe:FREQuency:CENTer {freq_lo}GHz')
+                sa.send(f':SENSe:FREQuency:CENTer {freq_sa}GHz')
 
-                f_out = freq_lo - mod_f
-                sa.send(f':CALCulate:MARKer1:X {f_out}GHz')
-                time.sleep(0.1)
-                sa_p_out = float(sa.query(':CALCulate:MARKer:Y?'))
+                if lo_f_is_div2:
+                    f_out = freq_sa + mod_f
+                    sa_p_out = set_read_marker(f_out)
 
-                f_carr = freq_lo
-                sa.write(f':CALCulate:MARKer1:X {f_carr}GHz')
-                time.sleep(0.1)
-                sa_p_carr = float(sa.query(':CALCulate:MARKer:Y?'))
+                    f_carr = freq_sa
+                    sa_p_carr = set_read_marker(f_carr)
 
-                f_sb = freq_lo + mod_f
-                sa.write(f':CALCulate:MARKer1:X {f_sb}GHz')
-                time.sleep(0.1)
-                sa_p_sb = float(sa.query(':CALCulate:MARKer:Y?'))
+                    f_sb = freq_sa - mod_f
+                    sa_p_sb = set_read_marker(f_sb)
 
-                f_3_harm = freq_lo + 3 * mod_f
-                sa.write(f':CALCulate:MARKer1:X {f_3_harm}GHz')
-                time.sleep(0.1)
-                sa_p_mod_f_x3 = float(sa.query(':CALCulate:MARKer:Y?'))
+                    f_3_harm = freq_sa - 3 * mod_f
+                    sa_p_3_harm = set_read_marker(f_3_harm)
+                else:
+                    f_out = freq_sa - mod_f
+                    sa_p_out = set_read_marker(f_out)
+
+                    f_carr = freq_sa
+                    sa_p_carr = set_read_marker(f_carr)
+
+                    f_sb = freq_sa + mod_f
+                    sa_p_sb = set_read_marker(f_sb)
+
+                    f_3_harm = freq_sa + 3 * mod_f
+                    sa_p_3_harm = set_read_marker(f_3_harm)
+
 
                 # lo_p_read = float(gen_lo.query('SOUR:POW?'))
                 # lo_f_read = float(gen_lo.query('SOUR:FREQ?'))
