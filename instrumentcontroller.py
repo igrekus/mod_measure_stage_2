@@ -341,7 +341,8 @@ class InstrumentController(QObject):
 
                 gen_lo.send(f':RAD:ARB:RSC {mod_u}')
 
-                time.sleep(0.5)
+                if not mock_enabled:
+                    time.sleep(0.5)
 
                 sa.send(f':SENSe:FREQuency:CENTer {freq_sa}GHz')
 
