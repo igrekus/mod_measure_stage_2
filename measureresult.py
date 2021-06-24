@@ -157,8 +157,9 @@ class MeasureResult:
 
         df.columns = [
             'Pгет, дБм', 'Fгет, ГГц', 'Pпот, дБ',
+            'Pвх, %', 'Pвх, дБм',
             'Pвых, дБм', 'Pнес, дБм', 'Pбок, дБм', 'P3г, дБм',
-            'αбок, дБ', 'αx3, дБ',
+            'Кп, дБ',
             'Uпит, В', 'Iпит, мА',
         ]
         df.to_excel(file_name, engine='openpyxl', index=False)
