@@ -385,7 +385,7 @@ class InstrumentController(QObject):
                     'sa_p_out': sa_p_out,
                     'sa_p_carr': sa_p_carr,
                     'sa_p_sb': sa_p_sb,
-                    'sa_p_mod_f_x3': sa_p_mod_f_x3,
+                    'sa_p_3_harm': sa_p_3_harm,
                 }
 
                 if mock_enabled:
