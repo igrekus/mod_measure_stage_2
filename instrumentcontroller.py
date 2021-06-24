@@ -275,6 +275,10 @@ class InstrumentController(QObject):
             np.arange(start=lo_f_start, stop=lo_f_end + 0.0001, step=lo_f_step)
         ]
 
+        mod_u_values_to_power = {
+            m: 10 for m in mod_u_values
+        }
+
         waveform_filename = 'WFM1:SINE_TEST_WFM'
 
         gen_lo.send(f':OUTP:MOD:STAT OFF')
@@ -374,8 +378,8 @@ class InstrumentController(QObject):
                 raw_point = {
                     'lo_p': lo_pow,
                     'lo_f': freq_lo,
-                    'mod_u': mod_u,   # %
-                    'mod_u_': 10,   # read from the % -> pow table
+                    'mod_u': mod_u,   # in %
+                    'mod_u_pow': mod_u_values_to_power.get(mod_u, 0),   # in power values via % <-> db table
                     'src_u': src_u_read,   # power source voltage as set in GUI
                     'src_i': src_i_read,
                     'sa_p_out': sa_p_out,
