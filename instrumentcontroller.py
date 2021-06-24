@@ -337,6 +337,8 @@ class InstrumentController(QObject):
                     sa.send(':CAL:AUTO ON')
                     raise RuntimeError('measurement cancelled')
 
+                pow_loss = 10
+
                 gen_lo.send(f':RAD:ARB:RSC {mod_u}')
 
                 time.sleep(0.5)
@@ -379,17 +381,22 @@ class InstrumentController(QObject):
                     'lo_p': lo_pow,
                     'lo_f': freq_lo,
                     'mod_u': mod_u,   # in %
-                    'mod_u_pow': mod_u_values_to_power.get(mod_u, 0),   # in power values via % <-> db table
+                    'mod_u_db': mod_u_values_to_power.get(mod_u, 0),   # in power values via % <-> db table
                     'src_u': src_u_read,   # power source voltage as set in GUI
                     'src_i': src_i_read,
                     'sa_p_out': sa_p_out,
                     'sa_p_carr': sa_p_carr,
                     'sa_p_sb': sa_p_sb,
                     'sa_p_3_harm': sa_p_3_harm,
+                    'loss': pow_loss,
                 }
 
                 if mock_enabled:
+                    # TODO record new test data
                     raw_point = mocked_raw_data[index]
+                    raw_point['loss'] = pow_loss
+                    raw_point['mod_u_db'] = -15
+                    raw_point['sa_p_3_harm'] = raw_point['sa_p_mod_f_x3']
                     index += 1
 
                 print(raw_point)
