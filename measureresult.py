@@ -89,7 +89,7 @@ class MeasureResult:
             'src_i': round(src_i, 2),
         }
 
-        lo_f_label = lo_f
+        lo_f_label = lo_f / GIGA
         self.data1[lo_f_label].append([p_in_db, sa_p_out])
         self._processed.append({**self._report})
 
