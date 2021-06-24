@@ -62,6 +62,29 @@ class InstrumentController(QObject):
             'sa_avg_count': 16,
         })
 
+        self._percent_to_db = load_ast_if_exists('modulate.ini', default={
+            5: -20.77,
+            10: -14.75,
+            15: -11.23,
+            20: -8.73,
+            25: -6.79,
+            30: -5.27,
+            35: -3.93,
+            40: -2.77,
+            45: -1.74,
+            50: -0.83,
+            55: 0.0,
+            60: 0.75,
+            65: 1.45,
+            70: 2.09,
+            75: 2.69,
+            80: 3.25,
+            85: 3.78,
+            90: 4.27,
+            95: 4.74,
+            100: 5.19,
+        })
+
         self._calibrated_pows_lo = load_ast_if_exists('cal_lo.ini', default={})
         self._calibrated_pows_rf = load_ast_if_exists('cal_rf.ini', default={})
 
@@ -275,10 +298,6 @@ class InstrumentController(QObject):
             np.arange(start=lo_f_start, stop=lo_f_end + 0.0001, step=lo_f_step)
         ]
 
-        mod_u_values_to_power = {
-            m: 10 for m in mod_u_values
-        }
-
         waveform_filename = 'WFM1:SINE_TEST_WFM'
 
         gen_lo.send(f':OUTP:MOD:STAT OFF')
@@ -371,7 +390,6 @@ class InstrumentController(QObject):
                     f_3_harm = freq_sa + 3 * mod_f
                     sa_p_3_harm = set_read_marker(f_3_harm)
 
-
                 # lo_p_read = float(gen_lo.query('SOUR:POW?'))
                 # lo_f_read = float(gen_lo.query('SOUR:FREQ?'))
 
@@ -382,7 +400,7 @@ class InstrumentController(QObject):
                     'lo_p': lo_pow,
                     'lo_f': freq_lo,
                     'mod_u': mod_u,   # in %
-                    'mod_u_db': mod_u_values_to_power.get(mod_u, 0),   # in power values via % <-> db table
+                    'mod_u_db': self._percent_to_db.get(mod_u, 0),   # in power values via % <-> db table
                     'src_u': src_u_read,   # power source voltage as set in GUI
                     'src_i': src_i_read,
                     'sa_p_out': sa_p_out,
@@ -396,7 +414,7 @@ class InstrumentController(QObject):
                     # TODO record new test data
                     raw_point = mocked_raw_data[index]
                     raw_point['loss'] = pow_loss
-                    raw_point['mod_u_db'] = mod_u
+                    raw_point['mod_u_db'] = self._percent_to_db.get(mod_u, 0)
                     raw_point['sa_p_3_harm'] = raw_point['sa_p_mod_f_x3']
                     index += 1
 
