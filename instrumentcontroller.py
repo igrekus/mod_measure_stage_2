@@ -250,8 +250,8 @@ class InstrumentController(QObject):
         lo_f_is_div2 = secondary['is_Flo_div2']
 
         mod_f = secondary['Fmod'] * MEGA
-        mod_u_offs = secondary['Uoffs']
-        mod_f_offs_0 = 0.5   # MHz
+        mod_u_offs = secondary['Uoffs'] * MILLI
+        mod_f_offs_0 = 0.5 * MEGA  # MHz
         mod_u_min = secondary['Umod_min']
         mod_u_max = secondary['Umod_max']
         mod_u_delta = secondary['Umod_delta']
@@ -284,8 +284,8 @@ class InstrumentController(QObject):
         gen_lo.send(f':OUTP:MOD:STAT OFF')
         gen_lo.send(f':RAD:ARB OFF')
         gen_lo.send(f':RAD:ARB:WAV "{waveform_filename}"')
-        gen_lo.send(f':RAD:ARB:BASE:FREQ:OFFS {mod_f + mod_f_offs_0}MHz')
-        gen_lo.send(f':DM:IQAD:EXT:COFF {mod_u_offs}mV')
+        gen_lo.send(f':RAD:ARB:BASE:FREQ:OFFS {mod_f + mod_f_offs_0}')
+        gen_lo.send(f':DM:IQAD:EXT:COFF {mod_u_offs}')
         gen_lo.send(f':DM:IQAD:EXT:IQAT 0db')
         gen_lo.send(f':DM:IQAD ON')
         gen_lo.send(f':DM:STAT ON')
@@ -295,7 +295,7 @@ class InstrumentController(QObject):
         src.send(f'APPLY p6v,{src_u}V,{src_i_max}mA')
 
         sa.send(':CAL:AUTO OFF')
-        sa.send(f':SENS:FREQ:SPAN {sa_span}MHz')
+        sa.send(f':SENS:FREQ:SPAN {sa_span}')
         sa.send(f'DISP:WIND:TRAC:Y:RLEV {sa_rlev}')
         sa.send(f'DISP:WIND:TRAC:Y:PDIV {sa_scale_y}')
         sa.send(f'AVER:COUNT {sa_avg_count}')
@@ -319,7 +319,7 @@ class InstrumentController(QObject):
             if lo_f_is_div2:
                 freq_lo *= 2
 
-            gen_lo.send(f'SOUR:FREQ {freq_lo}GHz')
+            gen_lo.send(f'SOUR:FREQ {freq_lo}')
 
             for mod_u in mod_u_values:
 
@@ -344,7 +344,7 @@ class InstrumentController(QObject):
                 if not mock_enabled:
                     time.sleep(0.5)
 
-                sa.send(f':SENSe:FREQuency:CENTer {freq_sa}GHz')
+                sa.send(f':SENSe:FREQuency:CENTer {freq_sa}')
 
                 if lo_f_is_div2:
                     f_out = freq_sa + mod_f
