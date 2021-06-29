@@ -355,14 +355,15 @@ class InstrumentController(QObject):
                     sa.send(':CAL:AUTO ON')
                     raise RuntimeError('measurement cancelled')
 
-                pow_loss = 10
-
-                gen_lo.send(f':RAD:ARB:RSC {mod_u}')
-
                 if not mock_enabled:
                     time.sleep(0.5)
 
+                gen_lo.send(f':RAD:ARB:RSC {mod_u}')
+
                 sa.send(f':SENSe:FREQuency:CENTer {freq_sa}')
+
+                if not mock_enabled:
+                    time.sleep(0.5)
 
                 if lo_f_is_div2:
                     f_out = freq_sa + mod_f
