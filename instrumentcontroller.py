@@ -337,7 +337,7 @@ class InstrumentController(QObject):
             gen_lo.send(f'SOUR:FREQ {freq_lo}')
             gen_lo.send(f'SOUR:POW {lo_pow + pow_loss}dbm')
 
-            time.sleep(1)
+            time.sleep(0.5)
 
             for mod_u in mod_u_values:
 
@@ -358,12 +358,18 @@ class InstrumentController(QObject):
                 if not mock_enabled:
                     time.sleep(0.5)
 
+                if sa_avg_state:
+                    sa.send(f'AVER OFF')
+
                 gen_lo.send(f':RAD:ARB:RSC {mod_u}')
+
+                if sa_avg_state:
+                    sa.send(f'AVER ON')
 
                 sa.send(f':SENSe:FREQuency:CENTer {freq_sa}')
 
                 if not mock_enabled:
-                    time.sleep(0.5)
+                    time.sleep(1.5)
 
                 if lo_f_is_div2:
                     f_out = freq_sa + mod_f
