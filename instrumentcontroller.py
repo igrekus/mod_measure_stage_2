@@ -134,9 +134,7 @@ class InstrumentController(QObject):
 
         secondary = self.secondaryParams
 
-        lo_pow_start = secondary['Plo_min']
-        lo_pow_end = secondary['Plo_max']
-        lo_pow_step = secondary['Plo_delta']
+        lo_pow = secondary['Plo']
         lo_f_start = secondary['Flo_min'] * GIGA
         lo_f_end = secondary['Flo_max'] * GIGA
         lo_f_step = secondary['Flo_delta'] * GIGA
@@ -147,8 +145,6 @@ class InstrumentController(QObject):
         sa_scale_y = secondary['sa_scale_y']
         sa_span = secondary['sa_span'] * MEGA
 
-        pow_lo_values = [round(x, 3) for x in np.arange(start=lo_pow_start, stop=lo_pow_end + 0.002, step=lo_pow_step)] \
-            if lo_pow_start != lo_pow_end else [lo_pow_start]
         freq_lo_values = [round(x, 3) for x in
                           np.arange(start=lo_f_start, stop=lo_f_end + 0.0001, step=lo_f_step)]
 
@@ -165,46 +161,44 @@ class InstrumentController(QObject):
         sa.send(f'DISP:WIND:TRAC:Y:PDIV {sa_scale_y}')
 
         result = defaultdict(dict)
-        for pow_lo in pow_lo_values:
-            gen_lo.send(f'SOUR:POW {pow_lo}dbm')
+        gen_lo.send(f'SOUR:POW {lo_pow}dbm')
 
-            for freq in freq_lo_values:
+        for freq in freq_lo_values:
 
-                freq_gen = freq
-                if lo_f_is_div2:
-                    freq_gen *= 2
+            freq_gen = freq
+            if lo_f_is_div2:
+                freq_gen *= 2
 
-                if token.cancelled:
-                    gen_lo.send(f'OUTP:STAT OFF')
-                    time.sleep(0.5)
+            if token.cancelled:
+                gen_lo.send(f'OUTP:STAT OFF')
+                time.sleep(0.5)
 
-                    gen_lo.send(f'SOUR:POW {pow_lo}dbm')
+                gen_lo.send(f'SOUR:POW {lo_pow}dbm')
 
-                    gen_lo.send(f'SOUR:FREQ {lo_f_start}GHz')
-                    raise RuntimeError('calibration cancelled')
+                gen_lo.send(f'SOUR:FREQ {lo_f_start}GHz')
+                raise RuntimeError('calibration cancelled')
 
-                gen_lo.send(f'SOUR:POW {pow_lo}dbm')
-                gen_lo.send(f'SOUR:FREQ {freq_gen}Hz')
+            gen_lo.send(f'SOUR:FREQ {freq_gen}Hz')
 
-                gen_lo.send(f'OUTP:STAT ON')
-                gen_lo.send(f':RAD:ARB ON')
+            gen_lo.send(f'OUTP:STAT ON')
+            gen_lo.send(f':RAD:ARB ON')
 
-                if not mock_enabled:
-                    time.sleep(0.5)
+            if not mock_enabled:
+                time.sleep(0.5)
 
-                sa.send(f':SENSe:FREQuency:CENTer {freq_gen}Hz')
+            sa.send(f':SENSe:FREQuency:CENTer {freq_gen}Hz')
 
-                if not mock_enabled:
-                    time.sleep(0.5)
+            if not mock_enabled:
+                time.sleep(0.5)
 
-                sa.send(f':CALCulate:MARKer1:X {freq_gen}Hz')
-                pow_read = float(sa.query(':CALCulate:MARKer:Y?'))
-                loss = abs(pow_lo - pow_read)
-                if mock_enabled:
-                    loss = 10
+            sa.send(f':CALCulate:MARKer1:X {freq_gen}Hz')
+            pow_read = float(sa.query(':CALCulate:MARKer:Y?'))
+            loss = abs(lo_pow - pow_read)
+            if mock_enabled:
+                loss = 10
 
-                print('loss: ', loss)
-                result[pow_lo][freq_gen] = loss
+            print('loss: ', loss)
+            result[lo_pow][freq_gen] = loss
 
         result = {k: v for k, v in result.items()}
         pprint_to_file('cal_lo.ini', result)
@@ -338,7 +332,12 @@ class InstrumentController(QObject):
             if lo_f_is_div2:
                 freq_lo *= 2
 
+            pow_loss = self._calibrated_pows_lo.get(lo_pow, dict()).get(freq_lo, 0) / 2
+
             gen_lo.send(f'SOUR:FREQ {freq_lo}')
+            gen_lo.send(f'SOUR:POW {lo_pow + pow_loss}dbm')
+
+            time.sleep(1)
 
             for mod_u in mod_u_values:
 
