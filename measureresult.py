@@ -42,6 +42,8 @@ class MeasureResult:
                     cutoff_idx = idx
                     cutoff_point = pow_in
                     break
+            else:
+                cutoff_point = pow_in
             cutoffs[1].append([f_lo, cutoff_point])
 
         self.data2 = cutoffs
@@ -90,7 +92,7 @@ class MeasureResult:
         }
 
         lo_f_label = lo_f / GIGA
-        self.data1[lo_f_label].append([p_in_db, sa_p_out])
+        self.data1[lo_f_label].append([p_in_db, kp])
         self._processed.append({**self._report})
 
     def clear(self):
