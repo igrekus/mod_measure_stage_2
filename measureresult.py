@@ -154,7 +154,7 @@ class MeasureResult:
         path = 'xlsx'
 
         make_dirs(f'{path}')
-        file_name = f'./{path}/{device}-{now_timestamp()}.xlsx'
+        file_name = f'./{path}/{device}-kp-{now_timestamp()}.xlsx'
 
         df = pd.DataFrame(self._processed)
         df.columns = [
@@ -166,5 +166,16 @@ class MeasureResult:
         ]
         df.to_excel(file_name, engine='openpyxl', index=False)
 
+        self._export_cutoff()
+
         open_explorer_at(os.path.abspath(file_name))
 
+    def _export_cutoff(self):
+        device = 'mod'
+        path = 'xlsx'
+        file_name = f'./{path}/{device}-cutoff-{now_timestamp()}.xlsx'
+        df = pd.DataFrame(self._processed_cutoffs[1], columns=['lo_f', 'cutoff'])
+
+        df.columns = ['Fгет, ГГц', 'P1дБвх, дБм']
+
+        df.to_excel(file_name, engine='openpyxl', index=False)
