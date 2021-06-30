@@ -7,8 +7,9 @@ from textwrap import dedent
 
 import pandas as pd
 
-from util.file import load_ast_if_exists, pprint_to_file
+from util.file import load_ast_if_exists, pprint_to_file, make_dirs, open_explorer_at
 from util.const import *
+from util.string import now_timestamp
 
 
 class MeasureResult:
@@ -149,14 +150,13 @@ class MeasureResult:
         """.format(**self._report))
 
     def export_excel(self):
-        # TODO implement
         device = 'mod'
         path = 'xlsx'
-        if not os.path.isdir(f'{path}'):
-            os.makedirs(f'{path}')
-        file_name = f'./{path}/{device}-{datetime.datetime.now().isoformat().replace(":", ".")}.xlsx'
-        df = pd.DataFrame(self._processed)
 
+        make_dirs(f'{path}')
+        file_name = f'./{path}/{device}-{now_timestamp()}.xlsx'
+
+        df = pd.DataFrame(self._processed)
         df.columns = [
             'Pгет, дБм', 'Fгет, ГГц', 'Pпот, дБ',
             'Pвх, %', 'Pвх, дБм',
@@ -166,5 +166,5 @@ class MeasureResult:
         ]
         df.to_excel(file_name, engine='openpyxl', index=False)
 
-        full_path = os.path.abspath(file_name)
-        Popen(f'explorer /select,"{full_path}"')
+        open_explorer_at(os.path.abspath(file_name))
+
