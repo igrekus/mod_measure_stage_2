@@ -321,7 +321,7 @@ class InstrumentController(QObject):
         gen_lo.send(f':RAD:ARB ON')
 
         if mock_enabled:
-            with open('./mock_data/-10-0db.txt', mode='rt', encoding='utf-8') as f:
+            with open('./mock_data/-5_16avg.txt', mode='rt', encoding='utf-8') as f:
                 index = 0
                 mocked_raw_data = ast.literal_eval(''.join(f.readlines()))
 
@@ -417,11 +417,7 @@ class InstrumentController(QObject):
                 }
 
                 if mock_enabled:
-                    # TODO record new test data
                     raw_point = mocked_raw_data[index]
-                    raw_point['loss'] = pow_loss
-                    raw_point['mod_u_db'] = self._percent_to_db.get(mod_u, 0)
-                    raw_point['sa_p_3_harm'] = raw_point['sa_p_mod_f_x3']
                     index += 1
 
                 print(raw_point)
