@@ -52,7 +52,7 @@ class PrimaryPlotWidget(QWidget):
         self._proxy_00 = pg.SignalProxy(self._plot_00.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved_00)
 
         self._plot_10.setLabel('left', 'P1дБвх, дБм', **self.label_style)
-        self._plot_10.setLabel('bottom', 'Pвх, дБм', **self.label_style)
+        self._plot_10.setLabel('bottom', 'Fгет, ГГц', **self.label_style)
         self._plot_10.enableAutoRange('x')
         self._plot_10.enableAutoRange('y')
         self._plot_10.showGrid(x=True, y=True)
