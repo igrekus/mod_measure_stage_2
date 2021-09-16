@@ -355,6 +355,9 @@ class InstrumentController(QObject):
                     sa.send(':CAL:AUTO ON')
                     raise RuntimeError('measurement cancelled')
 
+                gen_lo.send(f':DM:IQAD OFF')
+                gen_lo.send(f':DM:IQAD ON')
+
                 if not mock_enabled:
                     time.sleep(0.5)
 
