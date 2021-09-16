@@ -1,7 +1,7 @@
 from PyQt5.QtCore import pyqtSignal, QTimer
 
 from mytools.measurewidget import MeasureWidget, MeasureTask, CancelToken
-from util.file import remove_if_exists
+from forgot_again.file import remove_if_exists
 
 
 class MeasureWidgetWithSecondaryParameters(MeasureWidget):
@@ -20,70 +20,70 @@ class MeasureWidgetWithSecondaryParameters(MeasureWidget):
             params={
                 'Plo': [
                     'Pгет мин=',
-                    {'parent': self, 'start': -30.0, 'end': 30.0, 'step': 1.0, 'value': -5.0, 'suffix': ' дБм'}
+                    {'start': -30.0, 'end': 30.0, 'step': 1.0, 'value': -5.0, 'suffix': ' дБм'}
                 ],
                 'Flo_min': [
                     'Fгет.мин=',
-                    {'parent': self, 'start': 0.0, 'end': 40.0, 'step': 1.0, 'decimals': 3, 'value': 0.05, 'suffix': ' ГГц'}
+                    {'start': 0.0, 'end': 40.0, 'step': 1.0, 'decimals': 3, 'value': 0.05, 'suffix': ' ГГц'}
                 ],
                 'Flo_max': [
                     'Fгет.макс=',
-                    {'parent': self, 'start': 0.0, 'end': 40.0, 'step': 1.0, 'decimals': 3, 'value': 6.05, 'suffix': ' ГГц'}
+                    {'start': 0.0, 'end': 40.0, 'step': 1.0, 'decimals': 3, 'value': 6.05, 'suffix': ' ГГц'}
                 ],
                 'Flo_delta': [
                     'ΔFгет=',
-                    {'parent': self, 'start': 0.0, 'end': 40.0, 'step': 0.1, 'decimals': 3, 'value': 1.0, 'suffix': ' ГГц'}
+                    {'start': 0.0, 'end': 40.0, 'step': 0.1, 'decimals': 3, 'value': 1.0, 'suffix': ' ГГц'}
                 ],
                 'is_Flo_div2': [
                     '1/2 Fгет.',
-                    {'parent': self, 'value': False}
+                    {'value': False}
                 ],
                 'Fmod': [
                     'Fмод=',
-                    {'parent': self, 'start': 0.0, 'end': 1000.0, 'step': 1.0, 'decimals': 3, 'value': 1.0, 'suffix': ' МГц'}
+                    {'start': 0.0, 'end': 1000.0, 'step': 1.0, 'decimals': 3, 'value': 1.0, 'suffix': ' МГц'}
                 ],
                 'Umod_min': [
                     'Uмод.мин=',
-                    {'parent': self, 'start': 0.0, 'end': 100.0, 'step': 1.0, 'decimals': 2, 'value': 5.0, 'suffix': ' %'}
+                    {'start': 0.0, 'end': 100.0, 'step': 1.0, 'decimals': 2, 'value': 5.0, 'suffix': ' %'}
                 ],
                 'Umod_max': [
                     'Uмод.макс=',
-                    {'parent': self, 'start': 0.0, 'end': 100.0, 'step': 1.0, 'decimals': 2, 'value': 100.0, 'suffix': ' %'}
+                    {'start': 0.0, 'end': 100.0, 'step': 1.0, 'decimals': 2, 'value': 100.0, 'suffix': ' %'}
                 ],
                 'Umod_delta': [
                     'ΔUмод.=',
-                    {'parent': self, 'start': 0.0, 'end': 100.0, 'step': 1.0, 'decimals': 2, 'value': 5.0, 'suffix': ' %'}
+                    {'start': 0.0, 'end': 100.0, 'step': 1.0, 'decimals': 2, 'value': 5.0, 'suffix': ' %'}
                 ],
                 'Uoffs': [
                     'Uсм=',
-                    {'parent': self, 'start': 0.0, 'end': 1000.0, 'step': 1, 'decimals': 1, 'value': 250.0, 'suffix': ' мВ'}
+                    {'start': 0.0, 'end': 1000.0, 'step': 1, 'decimals': 1, 'value': 250.0, 'suffix': ' мВ'}
                 ],
                 'Usrc': [
                     'Uпит.=',
-                    {'parent': self, 'start': 4.75, 'end': 5.25, 'step': 0.25, 'value': 5.0, 'suffix': ' В'}
+                    {'start': 4.75, 'end': 5.25, 'step': 0.25, 'value': 5.0, 'suffix': ' В'}
                 ],
                 'sa_rlev': [
                     'Ref. lev.=',
-                    {'parent': self, 'start': -30.0, 'end': 30.0, 'step': 1.0, 'value': 10.0, 'suffix': ' дБ'}
+                    {'start': -30.0, 'end': 30.0, 'step': 1.0, 'value': 10.0, 'suffix': ' дБ'}
                 ],
                 'sa_scale_y': [
                     'Scale y=',
-                    {'parent': self, 'start': 0.0, 'end': 30.0, 'step': 1.0, 'value': 10.0, 'suffix': ' дБ'}
+                    {'start': 0.0, 'end': 30.0, 'step': 1.0, 'value': 10.0, 'suffix': ' дБ'}
                 ],
                 'sa_span': [
                     'Span=',
-                    {'parent': self, 'start': 0.0, 'end': 1000.0, 'step': 1.0, 'value': 10.0, 'suffix': ' МГц'}
+                    {'start': 0.0, 'end': 1000.0, 'step': 1.0, 'value': 10.0, 'suffix': ' МГц'}
                 ],
                 'sa_avg_state': [
                     'Avg.state=',
-                    {'parent': self, 'value': False}
+                    {'value': False}
                 ],
                 'sa_avg_count': [
                     'Avg.count=',
-                    {'parent': self, 'start': 0.0, 'end': 1000.0, 'step': 1.0, 'value': 16.0, 'suffix': ''}
+                    {'start': 0.0, 'end': 1000.0, 'step': 1.0, 'value': 16.0, 'suffix': ''}
                 ],
             }
-        )
+            , parent=self)
 
     def _connectSignals(self):
         self._paramInputWidget.secondaryChanged.connect(self.on_params_changed)

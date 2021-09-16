@@ -6,15 +6,10 @@ import numpy as np
 from collections import defaultdict
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal
 
+from instr.const import *
 from instr.instrumentfactory import mock_enabled, GeneratorFactory, SourceFactory, MultimeterFactory, AnalyzerFactory
 from measureresult import MeasureResult
-from util.file import load_ast_if_exists, pprint_to_file
-
-
-GIGA = 1_000_000_000
-MEGA = 1_000_000
-KILO = 1_000
-MILLI = 1 / 1_000
+from forgot_again.file import load_ast_if_exists, pprint_to_file
 
 
 class InstrumentController(QObject):
@@ -38,8 +33,17 @@ class InstrumentController(QObject):
         }
 
         self.deviceParams = {
-            'Модулятор': {
-                'F': 1,
+            '+25': {
+                'adjust': 'adjust_+25.ini',
+                'result': 'table_+25.xlsx',
+            },
+            '-60': {
+                'adjust': 'adjust_-60.ini',
+                'result': 'table_-60.xlsx',
+            },
+            '+85': {
+                'adjust': 'adjust_+85.ini',
+                'result': 'table_+85.xlsx',
             },
         }
 
@@ -222,6 +226,7 @@ class InstrumentController(QObject):
         device, _ = params
         try:
             self.result.set_secondary_params(self.secondaryParams)
+            self.result.set_primary_params(self.deviceParams[device])
             self._measure(token, device)
             # self.hasResult = bool(self.result)
             self.hasResult = True  # HACK
