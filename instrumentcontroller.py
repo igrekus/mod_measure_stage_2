@@ -20,7 +20,8 @@ class InstrumentController(QObject):
 
         addrs = load_ast_if_exists('instr.ini', default={
             'Анализатор': 'GPIB1::18::INSTR',
-            'P LO': 'GPIB1::6::INSTR',
+            'P MOD': 'GPIB1::6::INSTR',
+            'P LO': 'GPIB1::7::INSTR',
             'Источник': 'GPIB1::3::INSTR',
             'Мультиметр': 'GPIB1::22::INSTR',
         })
@@ -28,6 +29,7 @@ class InstrumentController(QObject):
         self.requiredInstruments = {
             'Анализатор': AnalyzerFactory(addrs['Анализатор']),
             'P LO': GeneratorFactory(addrs['P LO']),
+            'P MOD': GeneratorFactory(addrs['P MOD']),
             'Источник': SourceFactory(addrs['Источник']),
             'Мультиметр': MultimeterFactory(addrs['Мультиметр']),
         }
@@ -247,6 +249,7 @@ class InstrumentController(QObject):
 
     def _init(self):
         self._instruments['P LO'].send('*RST')
+        self._instruments['P MOD'].send('*RST')
         self._instruments['Источник'].send('*RST')
         self._instruments['Мультиметр'].send('*RST')
         self._instruments['Анализатор'].send('*RST')
@@ -259,6 +262,7 @@ class InstrumentController(QObject):
                 time.sleep(0.01)
             return float(sa.query(':CALCulate:MARKer:Y?'))
 
+        gen_mod = self._instruments['P MOD']
         gen_lo = self._instruments['P LO']
         src = self._instruments['Источник']
         mult = self._instruments['Мультиметр']
@@ -300,13 +304,14 @@ class InstrumentController(QObject):
         waveform_filename = 'WFM1:SINE_TEST_WFM'
 
         gen_lo.send(f':OUTP:MOD:STAT OFF')
-        gen_lo.send(f':RAD:ARB OFF')
-        gen_lo.send(f':RAD:ARB:WAV "{waveform_filename}"')
-        gen_lo.send(f':RAD:ARB:BASE:FREQ:OFFS {mod_f + mod_f_offs_0}')
-        gen_lo.send(f':DM:IQAD:EXT:COFF {mod_u_offs}')
-        gen_lo.send(f':DM:IQAD:EXT:IQAT 0db')
-        gen_lo.send(f':DM:IQAD ON')
-        gen_lo.send(f':DM:STAT ON')
+        gen_mod.send(f':OUTP:MOD:STAT OFF')
+        gen_mod.send(f':RAD:ARB OFF')
+        gen_mod.send(f':RAD:ARB:WAV "{waveform_filename}"')
+        gen_mod.send(f':RAD:ARB:BASE:FREQ:OFFS {mod_f + mod_f_offs_0}')
+        gen_mod.send(f':DM:IQAD:EXT:COFF {mod_u_offs}')
+        gen_mod.send(f':DM:IQAD:EXT:IQAT 0db')
+        gen_mod.send(f':DM:IQAD ON')
+        gen_mod.send(f':DM:STAT ON')
 
         gen_lo.send(f'SOUR:POW {lo_pow}dbm')
 
@@ -323,7 +328,8 @@ class InstrumentController(QObject):
         src.send('OUTPut ON')
 
         gen_lo.send(f'OUTP:STAT ON')
-        gen_lo.send(f':RAD:ARB ON')
+        gen_mod.send(f'OUTP:STAT ON')
+        gen_mod.send(f':RAD:ARB ON')
 
         if mock_enabled:
             with open('./mock_data/-5_16avg.txt', mode='rt', encoding='utf-8') as f:
@@ -348,8 +354,9 @@ class InstrumentController(QObject):
 
                 if token.cancelled:
                     gen_lo.send(f'OUTP:STAT OFF')
-                    gen_lo.send(f':DM:STAT OFF')
-                    gen_lo.send(f':RAD:ARB OFF')
+                    gen_mod.send(f'OUTP:STAT OFF')
+                    gen_mod.send(f':DM:STAT OFF')
+                    gen_mod.send(f':RAD:ARB OFF')
                     if not mock_enabled:
                         time.sleep(0.5)
                     src.send('OUTPut OFF')
@@ -360,8 +367,8 @@ class InstrumentController(QObject):
                     sa.send(':CAL:AUTO ON')
                     raise RuntimeError('measurement cancelled')
 
-                gen_lo.send(f':DM:IQAD OFF')
-                gen_lo.send(f':DM:IQAD ON')
+                gen_mod.send(f':DM:IQAD OFF')
+                gen_mod.send(f':DM:IQAD ON')
 
                 if not mock_enabled:
                     time.sleep(0.5)
@@ -369,7 +376,7 @@ class InstrumentController(QObject):
                 if sa_avg_state:
                     sa.send(f'AVER OFF')
 
-                gen_lo.send(f':RAD:ARB:RSC {mod_u}')
+                gen_mod.send(f':RAD:ARB:RSC {mod_u}')
 
                 if sa_avg_state:
                     sa.send(f'AVER ON')
@@ -433,8 +440,9 @@ class InstrumentController(QObject):
                 res.append(raw_point)
 
         gen_lo.send(f'OUTP:STAT OFF')
-        gen_lo.send(f':DM:STAT OFF')
-        gen_lo.send(f':RAD:ARB OFF')
+        gen_mod.send(f'OUTP:STAT OFF')
+        gen_mod.send(f':DM:STAT OFF')
+        gen_mod.send(f':RAD:ARB OFF')
         if not mock_enabled:
             time.sleep(0.5)
         src.send('OUTPut OFF')
