@@ -55,6 +55,7 @@ class InstrumentController(QObject):
             'Flo_max': 6.05,
             'Flo_delta': 1.0,
             'is_Flo_div2': False,
+            'D': False,
             'Fmod': 1.0,   # MHz
             'Umod_min': 5,   # %
             'Umod_max': 100,   # %
@@ -274,6 +275,7 @@ class InstrumentController(QObject):
         lo_f_step = secondary['Flo_delta'] * GIGA
 
         lo_f_is_div2 = secondary['is_Flo_div2']
+        d = secondary['D']
 
         mod_f = secondary['Fmod'] * MEGA
         mod_u_offs = secondary['Uoffs'] * MILLI
@@ -284,6 +286,8 @@ class InstrumentController(QObject):
 
         src_u = secondary['Usrc']
         src_i_max = 200   # mA
+        src_u_d = secondary['UsrcD']
+        src_i_d_max = 20   # mA
 
         sa_rlev = secondary['sa_rlev']
         sa_scale_y = secondary['sa_scale_y']
@@ -303,6 +307,7 @@ class InstrumentController(QObject):
 
         waveform_filename = 'WFM1:SINE_TEST_WFM'
 
+
         gen_lo.send(f':OUTP:MOD:STAT OFF')
         gen_mod.send(f':OUTP:MOD:STAT OFF')
         gen_mod.send(f':RAD:ARB OFF')
@@ -313,9 +318,12 @@ class InstrumentController(QObject):
         gen_mod.send(f':DM:IQAD ON')
         gen_mod.send(f':DM:STAT ON')
 
+        gen_f_mul = 2 if d else 1
         gen_lo.send(f'SOUR:POW {lo_pow}dbm')
+        gen_lo.send(f':FREQ:MULT {gen_f_mul}')
 
         src.send(f'APPLY p6v,{src_u}V,{src_i_max}mA')
+        src.send(f'APPLY p25v,{src_u_d}V,{src_i_d_max}mA')
 
         sa.send(':CAL:AUTO OFF')
         sa.send(f':SENS:FREQ:SPAN {sa_span}')
@@ -381,7 +389,11 @@ class InstrumentController(QObject):
                 if sa_avg_state:
                     sa.send(f'AVER ON')
 
-                sa.send(f':SENSe:FREQuency:CENTer {freq_sa}')
+                sa.send(f'DISP:WIND:TRAC:X:OFFS {0}Hz')
+                center_f = freq_sa / 2 if d else freq_sa
+                sa.send(f':SENSe:FREQuency:CENTer {center_f}Hz')
+                offset = freq_sa / 2if d else 0
+                sa.send(f'DISP:WIND:TRAC:X:OFFS {offset}Hz')
 
                 if not mock_enabled:
                     time.sleep(1.5)
