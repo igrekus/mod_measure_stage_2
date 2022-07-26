@@ -62,9 +62,6 @@ class MeasureResult:
         lo_p = data['lo_p']
         lo_f = data['lo_f']
 
-        src_u = data['src_u']
-        src_i = data['src_i'] / MILLI
-
         loss = data['loss']
         p_in = data['mod_u']
         p_in_db = data['mod_u_db']
@@ -96,9 +93,6 @@ class MeasureResult:
             'p_3_harm': round(sa_p_3_harm, 2),
 
             'kp': round(kp, 2),
-
-            'src_u': src_u,
-            'src_i': round(src_i, 2),
         }
 
         lo_f_label = lo_f / GIGA
@@ -148,10 +142,6 @@ class MeasureResult:
         Pвх, %={p_in:0.2f}
         Pвх, дБ={p_in_db:0.2f}
 
-        Источник питания:
-        U, В={src_u}
-        I, мА={src_i}
-
         Анализатор:
         Pвых, дБм={p_out:0.3f}
         Pнес, дБм={p_carr:0.3f}
@@ -175,7 +165,6 @@ class MeasureResult:
             'Pвх, %', 'Pвх, дБм',
             'Pвых, дБм', 'Pнес, дБм', 'Pбок, дБм', 'P3г, дБм',
             'Кп, дБ',
-            'Uпит, В', 'Iпит, мА',
         ]
         df.to_excel(file_name, engine='openpyxl', index=False)
 
