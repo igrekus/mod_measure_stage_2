@@ -287,7 +287,7 @@ class InstrumentController(QObject):
         src_u = secondary['Usrc']
         src_i_max = 200   # mA
         src_u_d = secondary['UsrcD']
-        src_i_d_max = 20   # mA
+        src_i_d_max = 100   # mA
 
         sa_rlev = secondary['sa_rlev']
         sa_scale_y = secondary['sa_scale_y']
